@@ -1,2 +1,10 @@
-Django==2.2.16
-djoser==2.1.0
+Django==2.2.19
+flake8==4.0.1
+importlib-metadata==4.2.0
+mccabe==0.6.1
+pycodestyle==2.8.0
+pyflakes==2.4.0
+pytz==2022.1
+sqlparse==0.4.2
+typing_extensions==4.2.0
+zipp==3.8.0
