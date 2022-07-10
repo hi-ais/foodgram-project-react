@@ -64,7 +64,7 @@ class Ingredient(models.Model):
         verbose_name='Название ингредиента',
         blank=False
     )
-    measure_unit = models.CharField(
+    measurement_unit = models.CharField(
         max_length=70,
         verbose_name='Единица измерения',
         blank=False
@@ -75,8 +75,8 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Ингредиенты'
         constraints = (
             models.UniqueConstraint(
-                fields=('name', 'measure_unit'),
-                name='uniq_name-measure_unit_pair'
+                fields=('name', 'measurement_unit'),
+                name='uniq_name-measurement_unit_pair'
             ),
         )
 
@@ -97,6 +97,7 @@ class Recipe(models.Model):
         max_length=50
     )
     image = models.ImageField(
+        upload_to='recipes',
         verbose_name='Изображение',
         blank=False
     )
@@ -117,12 +118,13 @@ class Recipe(models.Model):
         Ingredient,
         through='IngredientVolume',
         verbose_name='Ингредиенты рецепта',
-        related_name='recipies'
+        related_name='recipies',
+        blank=False
     )
 
     class Meta:
-        verbose_name = 'Рецепт',
-        verbose_name_plural = 'Рецепты',
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
         ordering = ['-id']
 
     def __str__(self):
@@ -130,7 +132,7 @@ class Recipe(models.Model):
 
 
 class IngredientVolume(models.Model):
-    """Модель для связи ингедиентов и рецепта."""
+    """Модель описывает количество ингредиента в рецепте."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -141,7 +143,7 @@ class IngredientVolume(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент'
     )
-    volume = models.PositiveSmallIntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         blank=False
     )
@@ -157,7 +159,7 @@ class IngredientVolume(models.Model):
         )
 
     def __str__(self):
-        return f'В рецепте {self.recipe} {self.ingredient} {self.volume}'
+        return f'В рецепте {self.recipe} {self.ingredient} {self.amount}'
 
 
 class FavoriteRecipe(models.Model):

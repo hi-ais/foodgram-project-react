@@ -16,5 +16,5 @@ class Command(BaseCommand):
             data = json.load(f)
             for ingredient in data:
                 Ingredient.objects.create(name=ingredient["name"],
-                                          measure_unit=ingredient[
+                                          measurement_unit=ingredient[
                                           "measurement_unit"])
