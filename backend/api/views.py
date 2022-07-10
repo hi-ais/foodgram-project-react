@@ -83,4 +83,11 @@ class RecipeList(generics.ListCreateAPIView):
     pagination_class = LimitPageNumberPagination
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    pagination_class = LimitPageNumberPagination
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+
 

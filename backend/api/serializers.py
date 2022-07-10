@@ -90,28 +90,30 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField()
+    measurement_unit = serializers.ReadOnlyField()
+
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ['id', 'name', 'measurement_unit']
 
 
-class IngredientAmountSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(
+class IngredientForRecipeSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='ingredient.name')
+    measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit'
     )
 
     class Meta:
         model = IngredientVolume
-        fields = ('id', 'name', 'measurement_unit', 'amount')
+        fields = ['id', 'name', 'amount', 'measurement_unit']
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only=True, many=True)
+    ingredients = IngredientForRecipeSerializer(source='ingredientvolume_set',
+                                                many=True)
+    tags = TagSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientAmountSerializer(source='ingredientamount_set',
-                                             read_only=True, many=True)
     image = Base64ImageField()
     is_favorite = serializers.SerializerMethodField()
     is_in_shopping_card = serializers.SerializerMethodField()
