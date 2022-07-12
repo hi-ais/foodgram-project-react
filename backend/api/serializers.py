@@ -99,9 +99,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientForRecipeSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='ingredient.name')
+    name = serializers.CharField(source='ingredient.name',read_only=True)
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit'
+        source='ingredient.measurement_unit',read_only=True
     )
 
     class Meta:
@@ -111,8 +111,9 @@ class IngredientForRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientForRecipeSerializer(source='ingredientvolume_set',
-                                                many=True)
-    tags = TagSerializer(many=True)
+                                                many=True, read_only=True)
+    tags = TagSerializer(read_only=True, many=True)
+    #tags=serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),many=True)
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField()
     is_favorite = serializers.SerializerMethodField()
@@ -135,3 +136,19 @@ class RecipeSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return ShoppingCard.objects.filter(user=user).exists()
+
+    def create_ingredients(self, ingredients, recipe):
+        for ingredient in ingredients:
+            IngredientVolume.objects.create(
+                recipe=recipe,
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount'),
+            )
+
+    def create(self, validated_data):
+        ingredients = self.initial_data.get('ingredients')
+        tags = self.initial_data.get('tags')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.create_ingredients(ingredients, recipe)
+        return recipe

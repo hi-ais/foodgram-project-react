@@ -13,6 +13,7 @@ from api.serializers import (TagSerializer, IngredientSerializer,
                              FollowSerializer, RecipeSerializer
                              )
 from api.pagination import LimitPageNumberPagination
+from api.permission import IsAuthorOrReadOnlyPermission
 from api.mixins import ListCreateDeleteViewSet
 from recipes.models import Tag, Ingredient, Recipe
 from users.models import Follow
@@ -77,17 +78,11 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
 
 
-class RecipeList(generics.ListCreateAPIView):
-    queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
-    pagination_class = LimitPageNumberPagination
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthorOrReadOnlyPermission,)
 
-
-
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
