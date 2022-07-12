@@ -99,6 +99,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientForRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name',read_only=True)
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit',read_only=True
@@ -113,7 +114,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientForRecipeSerializer(source='ingredientvolume_set',
                                                 many=True, read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    #tags=serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),many=True)
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField()
     is_favorite = serializers.SerializerMethodField()
@@ -152,3 +152,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags)
         self.create_ingredients(ingredients, recipe)
         return recipe
+
+    def update(self, instance, validated_data):
+        ingredients = self.initial_data.get('ingredients')
+        tags = self.initial_data.get('tags')
+        recipe_update = super().update(instance, validated_data)
+        IngredientVolume.objects.filter(recipe=instance).all().delete()
+        recipe_update.tags.set(tags)
+        self.create_ingredients(ingredients, recipe_update)
+        recipe_update.save()
+        return recipe_update
