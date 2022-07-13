@@ -50,9 +50,12 @@ class CustomUserSerializer(UserSerializer):
 
 
 class ShowShortRecipesSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
+
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time',)
+        read_only_fields = ('id', 'name', 'image', 'cooking_time',)
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -100,9 +103,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class IngredientForRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.CharField(source='ingredient.name',read_only=True)
+    name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',read_only=True
+        source='ingredient.measurement_unit', read_only=True
     )
 
     class Meta:
@@ -129,13 +132,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return FavoriteRecipe.objects.filter(user=user).exists()
+        return Recipe.objects.filter(favorite_recipe__user=user,
+                                     id=obj.id).exists()
 
     def get_is_in_shopping_card(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return ShoppingCard.objects.filter(user=user).exists()
+        return Recipe.objects.filter(card__user=user, id=obj.id).exists()
 
     def create_ingredients(self, ingredients, recipe):
         for ingredient in ingredients:
