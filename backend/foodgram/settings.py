@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
     'rest_framework',
+    'django_filters',
     'rest_framework.authtoken',
     'djoser',
 ]

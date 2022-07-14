@@ -4,6 +4,7 @@
 
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 User = get_user_model()
@@ -145,7 +146,8 @@ class IngredientVolume(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
-        blank=False
+        blank=False,
+        validators=[MinValueValidator(1,message='Минимальное количество ингридиентов 1')]
     )
 
     class Meta:
