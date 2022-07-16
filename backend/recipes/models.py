@@ -198,13 +198,13 @@ class ShoppingCard(models.Model):
     user = models.ForeignKey(
         User,
         verbose_name='Владелец корзины',
-        related_name='card_owner',
+        related_name='cart_owner',
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
-        related_name='card',
+        related_name='cart',
         on_delete=models.CASCADE
     )
 
@@ -214,7 +214,7 @@ class ShoppingCard(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe'),
-                name='uniq_card-user_pair'
+                name='uniq_cart-user_pair'
             ),
         )
 

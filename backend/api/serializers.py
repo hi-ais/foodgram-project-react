@@ -122,13 +122,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField()
-    is_favorite = serializers.SerializerMethodField()
-    is_in_shopping_card = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = ('id', 'tags', 'author', 'ingredients',
-                  'is_favorite', 'is_in_shopping_card',
+                  'is_favorited', 'is_in_shopping_cart',
                   'name', 'image', 'text', 'cooking_time')
 
     def validate(self, data):
@@ -152,18 +152,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         data['ingredients'] = ingredients
         return data
 
-    def get_is_favorite(self, obj):
+    def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return Recipe.objects.filter(favorite_recipe__user=user,
                                      id=obj.id).exists()
 
-    def get_is_in_shopping_card(self, obj):
+    def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Recipe.objects.filter(card__user=user, id=obj.id).exists()
+        return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
 
     def create_ingredients(self, ingredients, recipe):
         for ingredient in ingredients:
