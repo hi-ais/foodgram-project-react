@@ -3,5 +3,4 @@
 добавила .env с данными на сервер, создала директорию backend/ и файл .env
 hi_ais@diplom:/home/backend$ теперь тут .env
 почистила сервер от контейнеров
-sdsafsafsaf
-dsfsf
+sdsafsafsaf dfdf
