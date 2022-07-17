@@ -7,14 +7,12 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
 from api.serializers import (TagSerializer, IngredientSerializer,
-                             FollowSerializer, RecipeSerializer,
-                             ShowShortRecipesSerializer)
+                             FollowSerializer, RecipeSerializer)
 from api.pagination import LimitPageNumberPagination
 from api.permission import IsAuthorOrReadOnlyPermission
 from api.mixins import ListCreateDeleteViewSet
-from api.filters import RecipeFilterBackend
+from api.filters import RecipeFilterBackend, IngredientSearchFilter
 from api.functions import post_obj, del_obj
 from recipes.models import (Tag, Ingredient, Recipe, FavoriteRecipe,
                             ShoppingCard, IngredientVolume)
@@ -94,8 +92,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    filter_backends = (IngredientSearchFilter,)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
