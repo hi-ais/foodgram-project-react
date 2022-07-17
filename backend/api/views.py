@@ -67,8 +67,8 @@ class UserSubscribeViewSet(ListCreateDeleteViewSet):
             folowing.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({
-                'errors': 'Вы уже отписались'
-            }, status=status.HTTP_400_BAD_REQUEST)
+                        'errors': 'Вы уже отписались'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -153,27 +153,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         buying_list = {}
         for item in in_basket:
             recipe = item.recipe
-            ingredients_in_recipe = IngredientVolume.objects.filter(
-                                    recipe=recipe)
-            for item in ingredients_in_recipe:
+            in_recipe = IngredientVolume.objects.filter(recipe=recipe)
+            for item in in_recipe:
                 amount = item.amount
                 name = item.ingredient.name
                 measurement_unit = item.ingredient.measurement_unit
                 if name not in buying_list:
                     buying_list[name] = {
                         'amount': amount,
-                        'measurement_unit': measurement_unit
-                        }
+                        'measurement_unit': measurement_unit}
                 else:
                     buying_list[name]['amount'] = (
                         buying_list[name]['amount'] + amount
                     )
         shopping_list = []
         for item in buying_list:
-            shopping_list.append(
-             f'{item} - {buying_list[item]["amount"]} '
-             f'{buying_list[item]["measurement_unit"]}\n'
-            )
+            shopping_list.append(f'{item} - {buying_list[item]["amount"]} '
+                                 f'{buying_list[item]["measurement_unit"]}\n')
         response = HttpResponse(shopping_list, content_type='text/plain')
         filename = 'shopping_list.txt'
         response['Content-Disposition'] = f'attachment; filename={filename}'

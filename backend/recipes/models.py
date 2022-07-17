@@ -1,7 +1,3 @@
-"""Тут будут описаны модели, связанные с приложением рецепты.
-"""
-
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -147,7 +143,9 @@ class IngredientVolume(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         blank=False,
-        validators=[MinValueValidator(1,message='Минимальное количество ингридиентов 1')]
+        validators=[MinValueValidator(
+            1,
+            message='Минимальное количество ингридиентов 1')]
     )
 
     class Meta:
