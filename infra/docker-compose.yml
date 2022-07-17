@@ -10,8 +10,7 @@ services:
       - "5432:5432"
 
   backend:
-    build: ../backend
-    restart: always
+    image: hiais/foodgram_backend
     volumes:
       - static_value:/code/static/
       - media_value:/code/media/
@@ -22,9 +21,7 @@ services:
 
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: hiais/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
