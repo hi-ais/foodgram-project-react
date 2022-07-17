@@ -4,3 +4,4 @@
 hi_ais@diplom:/home/backend$ теперь тут .env
 почистила сервер от контейнеров
 sdsafsafsaf
+dsfsf
