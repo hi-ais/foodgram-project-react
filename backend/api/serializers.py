@@ -1,15 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.forms import ValidationError
-from djoser.serializers import UserSerializer, UserCreateSerializer
-from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
-
-from recipes.models import (Tag, Ingredient, Recipe, IngredientVolume,
-                            FavoriteRecipe, ShoppingCard)
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from drf_extra_fields.fields import Base64ImageField
+from recipes.models import Ingredient, IngredientVolume, Recipe, Tag
+from rest_framework import serializers
 from users.models import Follow
-
 
 User = get_user_model()
 

@@ -1,22 +1,22 @@
-from django.http import HttpResponse
 from django.contrib.auth import get_user_model
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import viewsets
+from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
-from api.serializers import (TagSerializer, IngredientSerializer,
-                             FollowSerializer, RecipeSerializer)
-from api.pagination import LimitPageNumberPagination
-from api.permission import IsAuthorOrReadOnlyPermission
-from api.mixins import ListCreateDeleteViewSet
-from api.filters import RecipeFilterBackend, IngredientSearchFilter
-from api.functions import post_obj, del_obj
-from recipes.models import (Tag, Ingredient, Recipe, FavoriteRecipe,
-                            ShoppingCard, IngredientVolume)
+from rest_framework.response import Response
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientVolume,
+                            Recipe, ShoppingCard, Tag)
 from users.models import Follow
+
+from .filters import IngredientSearchFilter, RecipeFilterBackend
+from .functions import del_obj, post_obj
+from .mixins import ListCreateDeleteViewSet
+from .pagination import LimitPageNumberPagination
+from .permission import IsAuthorOrReadOnlyPermission
+from .serializers import (FollowSerializer, IngredientSerializer,
+                          RecipeSerializer, TagSerializer)
 
 User = get_user_model()
 
