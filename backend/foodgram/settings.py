@@ -65,13 +65,14 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+    "default": {
+        "ENGINE": os.getenv("DB_ENGINE",
+                            default="django.db.backends.postgresql"),
+        "NAME": os.getenv("DB_NAME", default=None),
+        "USER": os.getenv("POSTGRES_USER", default=None),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default=None),
+        "HOST": os.getenv("DB_HOST", default=None),
+        "PORT": os.getenv("DB_PORT", default=None),
     }
 }
 
