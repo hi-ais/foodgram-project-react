@@ -12,3 +12,5 @@ dfs
 всеее почистила т удалила 
 остановила процессы postgres  Error response from daemon: driver failed programming external connectivity on endpoint ***-db-1 (4d3f2f897f70c9c2faf89700cbd5cbb7791c444d91b067a767620253b9fbdd5b): Error starting userland proxy: listen tcp4 0.0.0.0:5432: bind: address already in use
 попробовала исправить ошибку. создала директорию nginx/nginx.conf в нее поместила default.conf
+хрень
+снова добавила папу nginx в папку infra
