@@ -2,8 +2,11 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
+from pathlib import Path
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path  = Path('..')/'infra'/'.env'
+load_dotenv(dotenv_path=env_path)
 
 
 SECRET_KEY = '+fwskt6-9yx3h7hj)!(nut-&dthvla8#n(_agfp_$(hm7*rdr+'
@@ -72,7 +75,6 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
