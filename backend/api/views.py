@@ -1,22 +1,24 @@
+from api.filters import IngredientSearchFilter, RecipeFilterBackend
+from api.functions import del_obj, post_obj
+from api.mixins import ListCreateDeleteViewSet
+from api.pagination import LimitPageNumberPagination
+from api.permission import IsAuthorOrReadOnlyPermission
+from api.serializers import (FollowSerializer, IngredientSerializer,
+                             RecipeSerializer, SubscribeSerializer,
+                             TagSerializer)
+from django.conf import settings as set
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientVolume,
+                            Recipe, ShoppingCard, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from recipes.models import (FavoriteRecipe, Ingredient, IngredientVolume,
-                            Recipe, ShoppingCard, Tag)
 from users.models import Follow
-
-from .filters import IngredientSearchFilter, RecipeFilterBackend
-from .functions import del_obj, post_obj
-from .mixins import ListCreateDeleteViewSet
-from .pagination import LimitPageNumberPagination
-from .permission import IsAuthorOrReadOnlyPermission
-from .serializers import (FollowSerializer, IngredientSerializer,
-                          RecipeSerializer, TagSerializer)
 
 User = get_user_model()
 
@@ -28,47 +30,39 @@ class UserSubscribeViewSet(ListCreateDeleteViewSet):
     Вывод списка пользователей, на которых подписан
     пользователь: эндпоинт users/subscriptions/.
     """
-    serializer_class = FollowSerializer
+    serializer_class = SubscribeSerializer # если так оставлю закоммент, будет ошика:get_serializer_class() should either include a `serializer_class` attribute, or override the `get_serializer_class()` method.
     pagination_class = LimitPageNumberPagination
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)
+
 
     def list(self, request):
         user = request.user
-        queryset = Follow.objects.filter(user=user)
+        queryset = user.follower.filter(user=user)
         pages = self.paginate_queryset(queryset)
         serializer = FollowSerializer(pages, many=True,
                                       context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     def create(self, request, user_id):
-        user = request.user
-        author = get_object_or_404(User, id=user_id)
-        if user == author:
-            return Response({
-                'errors': 'Вы не можете подписаться на самого себя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if Follow.objects.filter(user=user, author=author).exists():
-            return Response({
-                'errors': 'Вы уже подписаны на данного пользователя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        folowing = Follow.objects.create(user=user, author=author)
-        serializer = FollowSerializer(folowing, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        data = {'user': request.user.id, 'author': user_id}
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        instance_serializer = FollowSerializer(instance)
+        return Response(instance_serializer.data,
+                        status=status.HTTP_201_CREATED)
 
     def destroy(self, request, user_id):
         user = request.user
         author = get_object_or_404(User, id=user_id)
-        if user == author:
-            return Response({
-                'errors': 'Вы не можете отписаться от самого себя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        folowing = Follow.objects.filter(user=user, author=author)
-        if folowing.exists():
-            folowing.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({
-                        'errors': 'Вы уже отписались'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        follow = get_object_or_404(
+            Follow, user=user, author=author
+        )
+        follow.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -106,7 +100,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     добавление/удаление рецепта в  список покупок,
     получние текстового файла со списком покупок.
     """
-    queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPageNumberPagination
     permission_classes = (IsAuthorOrReadOnlyPermission,)
@@ -128,7 +121,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     @action(methods=['post', 'delete'], detail=True,
-            permission_classes=[IsAuthenticated, ])
+            permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk=None):
         if request.method == 'POST':
             return post_obj(FavoriteRecipe, request.user, pk)
@@ -137,7 +130,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return None
 
     @action(methods=['post', 'delete'], detail=True,
-            permission_classes=[IsAuthenticated, ])
+            permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             return post_obj(ShoppingCard, request.user, pk)
@@ -146,31 +139,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return None
 
     @action(methods=['get'], detail=False,
-            permission_classes=[IsAuthenticated, ])
+            permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
         user = request.user
-        in_basket = user.cart_owner.all()
-        buying_list = {}
-        for item in in_basket:
-            recipe = item.recipe
-            in_recipe = IngredientVolume.objects.filter(recipe=recipe)
-            for item in in_recipe:
-                amount = item.amount
-                name = item.ingredient.name
-                measurement_unit = item.ingredient.measurement_unit
-                if name not in buying_list:
-                    buying_list[name] = {
-                        'amount': amount,
-                        'measurement_unit': measurement_unit}
-                else:
-                    buying_list[name]['amount'] = (
-                        buying_list[name]['amount'] + amount
-                    )
-        shopping_list = []
-        for item in buying_list:
-            shopping_list.append(f'{item} - {buying_list[item]["amount"]} '
-                                 f'{buying_list[item]["measurement_unit"]}\n')
-        response = HttpResponse(shopping_list, content_type='text/plain')
-        filename = 'shopping_list.txt'
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        return HttpResponse(shopping_list, content_type='text/plain')
+        ingredients = IngredientVolume.objects.filter(
+            recipe__cart__user=user).values(
+                'ingredient__name',
+                'ingredient__measurement_unit').annotate(
+                    total=Sum('amount'))
+        my_shopping_list = 'Мой cписок покупок: \n'
+        for item in ingredients:
+            my_shopping_list += (
+                f'{item["ingredient__name"]}-'
+                f'{item["total"]} '
+                f'{item["ingredient__measurement_unit"]}\n'
+            )
+        content_type = 'text/plain'
+        response = HttpResponse(
+            my_shopping_list, content_type=content_type)
+        response[
+            'Content-Disposition'] = f'attachment; filename={set.FILENAME}'
+        return response

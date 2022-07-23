@@ -22,4 +22,4 @@ class RecipeFilterBackend(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['tags', 'author']
+        fields = ('tags', 'author',)

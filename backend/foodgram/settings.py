@@ -1,14 +1,15 @@
 import os
-
+from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv()
+env_path = Path('..') / 'infra' / '.env'
+load_dotenv(dotenv_path=env_path)
 
 
-SECRET_KEY = '+fwskt6-9yx3h7hj)!(nut-&dthvla8#n(_agfp_$(hm7*rdr+'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', default='True') == 'True'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'backend', '51.250.107.141']
 
@@ -136,3 +137,6 @@ DJOSER = {
         'user_list': ('rest_framework.permissions.AllowAny',),
     }
 }
+COOKING_TIME = 1
+AMOUNT = 1
+FILENAME = 'my_shopping_list.txt'
