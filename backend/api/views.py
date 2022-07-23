@@ -30,13 +30,12 @@ class UserSubscribeViewSet(ListCreateDeleteViewSet):
     Вывод списка пользователей, на которых подписан
     пользователь: эндпоинт users/subscriptions/.
     """
-    serializer_class = SubscribeSerializer # если так оставлю закоммент, будет ошика:get_serializer_class() should either include a `serializer_class` attribute, or override the `get_serializer_class()` method.
+    serializer_class = SubscribeSerializer
     pagination_class = LimitPageNumberPagination
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
-
 
     def list(self, request):
         user = request.user
