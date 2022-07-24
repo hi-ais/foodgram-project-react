@@ -1,3 +1,18 @@
+from django.conf import settings as set
+from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+
+from recipes.models import (FavoriteRecipe, Ingredient, IngredientVolume,
+                            Recipe, ShoppingCard, Tag)
+from users.models import Follow
+
 from api.filters import IngredientSearchFilter, RecipeFilterBackend
 from api.functions import del_obj, post_obj
 from api.mixins import ListCreateDeleteViewSet
@@ -6,19 +21,6 @@ from api.permission import IsAuthorOrReadOnlyPermission
 from api.serializers import (FollowSerializer, IngredientSerializer,
                              RecipeSerializer, SubscribeSerializer,
                              TagSerializer)
-from django.conf import settings as set
-from django.contrib.auth import get_user_model
-from django.db.models import Sum
-from django.http import HttpResponse
-from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (FavoriteRecipe, Ingredient, IngredientVolume,
-                            Recipe, ShoppingCard, Tag)
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from users.models import Follow
 
 User = get_user_model()
 
@@ -119,7 +121,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(methods=['post', 'delete'], detail=True,
+    @action(methods=('post', 'delete',), detail=True,
             permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk=None):
         if request.method == 'POST':
@@ -128,7 +130,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return del_obj(FavoriteRecipe, request.user, pk)
         return None
 
-    @action(methods=['post', 'delete'], detail=True,
+    @action(methods=('post', 'delete',), detail=True,
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
@@ -137,7 +139,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return del_obj(ShoppingCard, request.user, pk)
         return None
 
-    @action(methods=['get'], detail=False,
+    @action(methods=('get',), detail=False,
             permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
         user = request.user

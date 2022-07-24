@@ -24,12 +24,12 @@ class Follow(models.Model):
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
-                fields=['user', 'author'],
+                fields=('user', 'author'),
                 name='unique_pare'),
-        ]
-        ordering = ['-id']
+        )
+        ordering = ('-id',)
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'

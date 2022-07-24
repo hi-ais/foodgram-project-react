@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.serializers import ShowShortRecipesSerializer
 from recipes.models import Recipe
+from api.serializers import ShowShortRecipesSerializer
 
 
 def post_obj(model, user, pk):

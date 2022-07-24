@@ -1,12 +1,13 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import Ingredient, IngredientVolume, Recipe, Tag
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
+from recipes.models import Ingredient, IngredientVolume, Recipe, Tag
 from users.models import Follow
-from django.conf import settings
 
 User = get_user_model()
 
@@ -33,10 +34,10 @@ class CustomUserSerializer(UserSerializer):
                   'first_name', 'last_name', 'is_subscribed',)
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request is None or request.user.is_anonymous:
+        user = self.context.get('request').user
+        if user.is_anonymous or (user == obj):
             return False
-        return Follow.objects.filter(user=request.user, author=obj).exists()
+        return Follow.objects.filter(user=user, author=obj.id).exists()
 
 
 class ShowShortRecipesSerializer(serializers.ModelSerializer):
@@ -85,13 +86,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ('user', 'author',)
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
                 fields=('user', 'author'),
                 message=('Вы уже подписаны на этого пользователя!')
-            )
-        ]
+            ),
+        )
 
     def validate(self, data):
         request = self.context.get('request')
@@ -119,18 +120,17 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit',)
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=Ingredient.objects.all(),
-                fields=('name', 'measurement_unit',))]
+                fields=('name', 'measurement_unit',)),)
 
 
 class IngredientForRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit', read_only=True
-    )
+        source='ingredient.measurement_unit', read_only=True)
 
     class Meta:
         model = IngredientVolume

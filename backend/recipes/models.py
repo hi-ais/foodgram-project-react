@@ -1,7 +1,7 @@
-from django.contrib.auth import get_user_model
-from django.db import models
-from django.core.validators import MinValueValidator
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
+from django.db import models
 
 User = get_user_model()
 
@@ -16,7 +16,7 @@ class Tag(models.Model):
     DARK_BLUE = '#000080'
     PURPLE = '#9370DB'
 
-    COLOR_CHOICE = [
+    COLOR_CHOICE = (
         (RED, 'Красный'),
         (ORANGE, 'Оранжевый'),
         (YELLOW, 'Жёлтый'),
@@ -24,7 +24,7 @@ class Tag(models.Model):
         (BLUE, 'Голубой'),
         (DARK_BLUE, 'Синий'),
         (PURPLE, 'Фиолетовый'),
-    ]
+    )
 
     name = models.CharField(
         max_length=50,
@@ -124,7 +124,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ['-id']
+        ordering = ('-id',)
 
     def __str__(self):
         return self.name
@@ -145,9 +145,9 @@ class IngredientVolume(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         blank=False,
-        validators=[MinValueValidator(
-            int(settings.AMOUNT),
-            message='Минимальное количество ингридиентов 1')]
+        validators=(MinValueValidator(
+            settings.AMOUNT,
+            message='Минимальное количество ингридиентов 1'),)
     )
 
     class Meta:
