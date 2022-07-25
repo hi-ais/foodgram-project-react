@@ -3,6 +3,17 @@
 ![workflow](https://github.com/hi-ais/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 На онлайн-сервисе Foodgramm пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
+## Технологии, используемые в проекте:
+- Django
+- Django REST Framework
+- Python
+- Nginx
+- PostgreSQL
+- Docker
+- gunicorn
+- Yandex.cloud
+- GitHubActions
+
 ##  Установка
 1. Склонируйте репозиторий на Ваш компьютер
 
@@ -58,19 +69,14 @@ DB_USER=<пользователь бд>
 DB_PASSWORD=<пароль>
 DB_HOST=<db>
 DB_PORT=<5432>
+SECRET_KEY=<секретный ключ проекта django>
+DEBUG = False
 ```
 ## Работа с Workflow
 Вам необходимо добавить в Secrets GitHub переменные окружения для работы:
 ```
-DB_ENGINE=<django.db.backends.postgresql>
-DB_NAME=<имя базы данных>
-DB_USER=<пользователь бд>
-DB_PASSWORD=<пароль>
-DB_HOST=<db>
-DB_PORT=<5432>
 DOCKER_PASSWORD=<пароль от DockerHub>
 DOCKER_USERNAME=<имя пользователя>
-SECRET_KEY=<секретный ключ проекта django>
 USER=<username для подключения к серверу>
 HOST=<IP сервера>
 PASSPHRASE=<пароль для сервера, если он установлен>
@@ -78,7 +84,7 @@ SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.s
 
 ```
 
-* Шаге Workflow :*
+* Шаги Workflow :*
 
 - Проверка кода на соответствие PEP8
 - Сборка и публикация образа бекенда на DockerHub.
@@ -99,7 +105,7 @@ SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.s
 
 3. Внутри контейнера необходимо выполнить миграции, подключить статику и создать суперпользователя:
 
-`python manage.py makemigrations user`
+`python manage.py makemigrations`
 
 `python manage.py migrate`
 
@@ -108,3 +114,5 @@ SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.s
 `python manage.py createsuperuser`
 
 Проект будет доступен по вашему IP
+
+Документацию API и все эндпоинты можно посмотеть по ссылке:  http://<ваш_ip>/api/docs/
