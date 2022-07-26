@@ -1,11 +1,8 @@
 import os
-#from pathlib import Path
 
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#env_path = Path('..') / 'infra' / '.env'
-#load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
