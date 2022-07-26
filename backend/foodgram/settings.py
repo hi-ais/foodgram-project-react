@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv()
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = '+fwskt6-9yx3h7hj)!(nut-&dthvla8#n(_agfp_$(hm7*rdr+'
 
-DEBUG = os.environ.get('DEBUG', default='True') == 'True'
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'backend', '51.250.107.141']
 
