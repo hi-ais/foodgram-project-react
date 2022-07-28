@@ -12,13 +12,14 @@ class UserAdmin(admin.ModelAdmin):
         'last_name',
         'email'
     )
-    list_filter = ('username', 'email',)
     search_fields = ('first_name', 'last_name', 'email',)
 
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('user', 'author',)
+    search_fields = ('follower__username',
+                     'following__email',)
 
 
 admin.site.unregister(User)

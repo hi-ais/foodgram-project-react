@@ -158,7 +158,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError('Нужен хотя бы один '
-                                              'ингридиент для рецепта')
+                                              'ингредиент для рецепта')
         ingredient_list = []
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient,
@@ -169,7 +169,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             ingredient_list.append(ingredient)
             if int(item['amount']) < settings.AMOUNT:
                 raise serializers.ValidationError('Минимальное количество '
-                                                  'ингридиента 1')
+                                                  'ингредиента 1')
         data['ingredients'] = ingredients
         return data
 
