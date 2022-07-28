@@ -12,7 +12,7 @@ class IngredientVolumeInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'count_favorites',)
     list_filter = ('tags',)
-    search_fields = ('author', 'author__email', 'name',)
+    search_fields = ('name', 'author__username', 'author__email',)
     inlines = [IngredientVolumeInline]
 
     def count_favorites(self, obj):
@@ -23,8 +23,8 @@ class RecipeAdmin(admin.ModelAdmin):
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     list_filter = ('favorite_recipe__tags',)
-    search_fields = ('user_added__username', 'user_added__email',
-                     'favorite_recipe__name',)
+    search_fields = ('user__username', 'user__email',
+                     'recipe__name',)
 
 
 @admin.register(Ingredient)
@@ -52,7 +52,7 @@ class IngredientVolumeAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCard)
 class ShoppingCardAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
-    search_fields = ('cart_owner__username',
-                     'cart_owner__email',
-                     'cart__name')
-    list_filter = ('cart__tags',)
+    search_fields = ('user__username',
+                     'user__email',
+                     'recipe__name')
+    list_filter = ('recipe__tags',)

@@ -18,8 +18,8 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('user', 'author',)
-    search_fields = ('follower__username',
-                     'following__email',)
+    search_fields = ('user__username',
+                     'author__email',)
 
 
 admin.site.unregister(User)
