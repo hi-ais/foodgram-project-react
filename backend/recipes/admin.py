@@ -22,7 +22,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(FavoriteRecipe)
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
-    list_filter = ('favorite_recipe__tags',)
+    list_filter = ('recipe__tags',)
     search_fields = ('user__username', 'user__email',
                      'recipe__name',)
 
