@@ -1,9 +1,10 @@
-# Дипломный проект FOODGRAM
+# Graduation project FOODGRAM
 
 ![workflow](https://github.com/hi-ais/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
-На онлайн-сервисе Foodgramm пользователи смогут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
-## Технологии, используемые в проекте:
+On the Foodgramm online service, users will be able to publish recipes, subscribe to publications of other users, add their favorite recipes to the Favorites list, and before going to the store, download a summary list of products needed to prepare one or more selected dishes.
+
+## Built With:
 - Django
 - Django REST Framework
 - Python
@@ -14,96 +15,98 @@
 - Yandex.cloud
 - GitHubActions
 
-##  Установка
-1. Склонируйте репозиторий на Ваш компьютер
+##  Project setup
+1. Clone the repository
 
 `git@github.com:hi-ais/foodgram-project-react.git`
 
-2. Создайте и активируйте виртуальное окружение:
+2. Create and activate the virtual environment:
 
 `python -m venv venv`
 `source venv/Scripts/activate`
 `python -m pip install`
 
-3. Установите зависимости`:
+3. Install dependencies:
 
 `pip install -r requirements.txt`
 
-4. Установите линтер flake8
+4. Install the flake8 linter
 
 `pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-isort`
 
-5. Проверьте код на соответствие стандартам PEP8 и запустите pytest:
+5. Check the code against PEP8 standards and run pytest:
 
 `python -m flake8`
 `pytest`
 
-##  Подготовка сервера
+##  Server preparation
 
-1. Войдите на свой удаленный сервер в облаке.
-2. Остановите службу nginx:
+1. Log in to your remote server in the cloud.
+
+2. Stop the nginx service:
 
 `sudo systemctl stop nginx`
 
-3. Установите Docker:
+3. Install Docker:
 
 `sudo apt install docker.io`
 
-4. Установите docker-compose:
+4. Install docker-compose:
 
 `sudo apt-get update`
 
 `sudo apt-get install docker-compose-plugin`
 
-5. Скопируйте файлы docker-compose.yaml и  **директорию** с файлом default.conf из вашего проекта на сервер в home/<ваш_username>/docker-compose.yaml и home/<ваш_username>/nginx/default.conf соответственно:
+5. Copy files docker-compose.yaml and  **directory** with the default.conf file from your project to the server in home/<your_username>/docker-compose.yaml and home/<your_username>/nginx/default.conf respectively:
 
 `scp docker-compose.yaml <USER>@<HOST>`
 
 `scp default.conf <USER>@<HOST>:/nginx/`
 
-6. Создайте файл **.env** и заполните его по примеру:
+6. Create a file **.env** and fill it like this:
 ```
 DB_ENGINE=<django.db.backends.postgresql>
-DB_NAME=<имя базы данных postgres>
-DB_USER=<пользователь бд>
-DB_PASSWORD=<пароль>
+DB_NAME=<database name postgres>
+DB_USER=<database user>
+DB_PASSWORD=<password>
 DB_HOST=<db>
 DB_PORT=<5432>
-SECRET_KEY=<секретный ключ проекта django>
+SECRET_KEY=<project secret key django>
 DEBUG = False
 ```
-## Работа с Workflow
-Вам необходимо добавить в Secrets GitHub переменные окружения для работы:
+## Working with Workflow
+You need to add environment variables to Secrets GitHub to work:
 ```
-DOCKER_PASSWORD=<пароль от DockerHub>
-DOCKER_USERNAME=<имя пользователя>
-USER=<username для подключения к серверу>
-HOST=<IP сервера>
-PASSPHRASE=<пароль для сервера, если он установлен>
-SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.ssh/id_rsa)>
+DOCKER_PASSWORD=<password from DockerHub>
+DOCKER_USERNAME=<username>
+USER=<username to connect to the server>
+HOST=<severs's IP >
+PASSPHRASE=<password for the server, if set>
+SSH_KEY=<your SSH key (to get the command: cat ~/.ssh/id_rsa)>
 
 ```
 
-* Шаги Workflow :*
+Workflow steps:
 
-- Проверка кода на соответствие PEP8
-- Сборка и публикация образа бекенда на DockerHub.
-- Автоматический деплой на удаленный сервер.
+- Checking the code for compliance with PEP8
+- Building and publishing the backend image on DockerHub.
+- Automatic deployment to a remote server.
 
-##  Развертывание приложения
+##  Application Deployment
 
-1. Необходимо подключиться к серверу.
+1. You need to connect to the server.
 
 `ssh <USER>@<HOST>` 
-2. Собрать контейнеры с помощью команды
+
+2. Collect containers using the command
 
 `sudo docker compose up -d --build`
 
-2. Перейдите в запущенный контейнер приложения *backend* командой:
+2. Navigate to the running *backend* application container with the command:
 
 `sudo docker container exec -it <CONTAINER ID> bash`
 
-3. Внутри контейнера необходимо выполнить миграции, подключить статику и создать суперпользователя:
+3. Inside the container, you need to perform migrations, connect statics and create a superuser:
 
 `python manage.py makemigrations`
 
@@ -113,9 +116,9 @@ SSH_KEY=<ваш SSH ключ (для получения команда: cat ~/.s
 
 `python manage.py createsuperuser`
 
-Проект будет доступен по вашему IP
+The project will be available by your IP
 
 
-Админ:
-имя: aiskhaidarova
-пароль:admin08
+Admin:
+name: aiskhaidarova
+password:admin08
